@@ -4,11 +4,12 @@
  * setup.php - Initialize database and tables with proper schema
  */
 
-// Database configuration
-$db_host = 'localhost';
-$db_user = 'root';
-$db_password = '';
-$db_name = 'document_system';
+// Database configuration - use environment variables for production (Render, Docker, etc)
+// For local development, set these in .env or PHP environment
+$db_host = !empty($_ENV['DB_HOST']) ? $_ENV['DB_HOST'] : (getenv('DB_HOST') ?: 'localhost');
+$db_user = !empty($_ENV['DB_USER']) ? $_ENV['DB_USER'] : (getenv('DB_USER') ?: 'root');
+$db_password = !empty($_ENV['DB_PASSWORD']) ? $_ENV['DB_PASSWORD'] : (getenv('DB_PASSWORD') ?: '');
+$db_name = !empty($_ENV['DB_NAME']) ? $_ENV['DB_NAME'] : (getenv('DB_NAME') ?: 'document_system');
 
 // Create connection without selecting database
 $conn = mysqli_connect($db_host, $db_user, $db_password);

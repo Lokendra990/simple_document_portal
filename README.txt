@@ -483,20 +483,151 @@ DESIGN PATTERN:
 - Reusable components
 
 ================================================================================
+CLOUD DEPLOYMENT (RENDER.COM)
+================================================================================
+
+OVERVIEW:
+This application is fully compatible with Render.com cloud platform.
+All database connections use environment variables for secure cloud deployment.
+
+ENVIRONMENT VARIABLES REQUIRED:
+For Render.com deployment, set these in Render Environment Variables:
+- DB_HOST: Your MySQL hostname from Render (e.g., mysql.someregion.render.com)
+- DB_USER: Your MySQL username
+- DB_PASSWORD: Your MySQL password
+- DB_NAME: Your database name (e.g., document_system)
+
+RENDER DEPLOYMENT STEPS:
+
+1. PREPARE YOUR REPOSITORY
+   a. Ensure Dockerfile exists in project root (already included)
+   b. Ensure docker-compose.yml exists (already included)
+   c. Git commit and push all files
+
+2. CREATE MYSQL DATABASE ON RENDER
+   a. Go to Render.com dashboard
+   b. Create new MySQL database service
+   c. Choose: PostgreSQL or MySQL (select MySQL)
+   d. Set database name: document_system
+   e. Note the database credentials
+   f. Wait for database to be ready
+
+3. CREATE WEB SERVICE ON RENDER
+   a. Click "New" → "Web Service"
+   b. Connect your GitHub repository
+   c. Choose: Docker for Runtime
+   d. Set build command: (leave empty - Docker will build)
+   e. Set start command: (leave empty - Docker will start)
+   f. Set instance type: Free or paid (based on needs)
+
+4. SET ENVIRONMENT VARIABLES
+   a. In Render Web Service settings
+   b. Add environment variable: DB_HOST
+      Value: your-mysql-hostname.render.com (from MySQL service)
+   c. Add environment variable: DB_USER
+      Value: your_mysql_username
+   d. Add environment variable: DB_PASSWORD
+      Value: your_mysql_password
+   e. Add environment variable: DB_NAME
+      Value: document_system
+   f. Save variables and restart deployment
+
+5. INITIALIZE DATABASE (FIRST TIME ONLY)
+   a. Once deployment is successful
+   b. Navigate to: https://your-app.render.com/setup.php
+   c. This will create all required tables
+   d. Default superadmin account will be created
+   e. You should see success messages
+
+6. VERIFY DEPLOYMENT
+   a. Navigate to: https://your-app.render.com
+   b. You should see the login page
+   c. Log in with: superadmin / Admin@123
+   d. Upload a test file
+   e. Verify download works
+
+STORAGE NOTES FOR RENDER:
+- Render uses ephemeral file system (files deleted on redeploy)
+- For persistent storage, use Render Disk or cloud storage
+- Current uploads/ folder works for temporary files
+- Consider implementing backup/export functionality
+
+DATABASE CONNECTION TROUBLESHOOTING:
+If you see "Database connection failed":
+1. Check environment variables are set correctly in Render dashboard
+2. Verify MySQL database is created and running
+3. Confirm database credentials are accurate
+4. Check MySQL service is in the same Render region if possible
+5. Wait 5-10 minutes for DNS propagation
+6. Restart the web service deployment
+
+SECURITY BEST PRACTICES:
+1. Change default superadmin password after first login
+2. Use strong passwords for database
+3. Keep credentials in Render environment variables, not code
+4. Enable HTTPS (Render provides this automatically)
+5. Regular backups of database
+6. Monitor access logs for suspicious activity
+
+================================================================================
+DOCKER DEPLOYMENT (LOCAL)
+================================================================================
+
+LOCAL DOCKER DEPLOYMENT STEPS:
+
+1. ENSURE DOCKER IS INSTALLED
+   a. Install Docker Desktop (https://www.docker.com/products/docker-desktop)
+   b. Start Docker application
+
+2. BUILD AND RUN WITH DOCKER COMPOSE
+   a. Navigate to project folder
+   b. Run: docker-compose up --build
+   c. Wait for MySQL to initialize (takes 30-60 seconds)
+   d. You should see: "web_1 ... Listening on port 80"
+
+3. ACCESS APPLICATION
+   a. Open browser
+   b. Navigate to: http://localhost:8000
+   c. You should see the login page
+
+4. INITIALIZE DATABASE (FIRST TIME)
+   a. Navigate to: http://localhost:8000/setup.php
+   b. Follow setup instructions
+   c. Database tables will be created
+   d. Default superadmin account created
+
+5. LOG IN
+   a. Username: superadmin
+   b. Password: Admin@123
+   c. Change password after first login
+
+6. STOP DOCKER CONTAINERS
+   a. Press Ctrl+C in terminal
+   b. Or run: docker-compose down
+
+DOCKER BENEFITS:
+- Same environment everywhere (local, cloud, production)
+- No need to install PHP, MySQL separately
+- Automatic database initialization
+- Easy to scale and manage
+- Consistent with cloud deployment
+
+================================================================================
 SUPPORT & LICENSE
 ================================================================================
 
 COMPATIBILITY:
-- Windows (XAMPP/WAMP)
-- Linux (Apache/MySQL)
-- macOS (MAMP)
+- Windows (XAMPP/WAMP or Docker)
+- Linux (Apache/MySQL or Docker)
+- macOS (MAMP or Docker)
+- Cloud (Render.com, Docker containers)
 
 BROWSER SUPPORT:
 - Desktop: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
 - Mobile: iOS 12+, Android 6+
 
-VERSION: 1.0
-LAST UPDATED: May 26, 2024
+VERSION: 1.0 (Updated with Cloud Deployment)
+LAST UPDATED: May 29, 2024
 CREATED FOR: Beginners to learn PHP + MySQL web development
 
 ================================================================================
